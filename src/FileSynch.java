@@ -95,7 +95,6 @@ public class FileSynch {
             //получаем очередной элемент
             Map.Entry<Path, Long> next = iteratorDirectoriesDest.next();
             Path keyDest = next.getKey();
-            Long valueDest = next.getValue();
             boolean flag = false;
             //ищем такой же элемент в новой мапе
             for (Map.Entry<Path, Long> nextNew : newDirectoriesAndFilesDest.entrySet()) {
@@ -123,10 +122,8 @@ public class FileSynch {
         //потом пустые папки, начиная с самой глубокой
         //для чего сортируем список по длинне в обратном порядке
         listForDelete.sort((o1, o2) -> {
-            int result;
-            if (o1.toString().length() == o2.toString().length()) {
-                result = 0;
-            } else {
+            int result = 0;
+            if (!(o1.toString().length() == o2.toString().length())) {
                 result = (o1.toString().length() > o2.toString().length()) ? 1 : -1;
             }
             return result;
