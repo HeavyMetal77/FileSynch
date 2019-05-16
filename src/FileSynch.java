@@ -14,9 +14,25 @@ public class FileSynch {
 
         Path sourcePath = Paths.get(args[0]);
         Path destPath = Paths.get(args[1]);
+        Map<Path, Long> directoriesAndFilesSource = null;
 
-        //получаем мапу всех директорий в исходной папке
-        Map<Path, Long> directoriesAndFilesSource = directory(sourcePath);
+        if ((Files.exists(sourcePath))) {
+            //получаем мапу всех директорий в исходной папке
+            directoriesAndFilesSource = directory(sourcePath);
+        } else{
+            System.out.println("Не верно указан путь к директории source!");
+            System.exit(0);
+        }
+
+            //если целевая папка не существует - создаем ее
+            if (Files.notExists(destPath)) {
+                try {
+                    Files.createDirectory(destPath);
+                } catch (IOException e) {
+                    System.out.println("Не удалось создать директорию!");
+                    e.printStackTrace();
+                }
+            }
         //получаем мапу всех директорий в целевой папке
         Map<Path, Long> directoriesAndFilesDest = directory(destPath);
 
@@ -25,10 +41,6 @@ public class FileSynch {
         createNewMapFromSourceWithDistPath(sourcePath, destPath, directoriesAndFilesSource, newDirectoriesAndFilesDest);
 
         try {
-            //если целевая папка не существует - создаем ее
-            if (Files.notExists(destPath)) {
-                Files.createDirectory(destPath);
-            }
             //проверяем удаленные файлы и папки из исходного списка
             deleteNonExistDirectory(directoriesAndFilesDest, newDirectoriesAndFilesDest);
             //копируем (при необходимости заменяем) файлы и директории
@@ -65,7 +77,7 @@ public class FileSynch {
                 Files.copy(finalPathSource, key, StandardCopyOption.COPY_ATTRIBUTES);
             } else {
                 //если элемент найден, сравниваем размер
-                if (Files.size(finalPathSource) != Files.size(key)) {
+                if ((Files.size(finalPathSource) != Files.size(key)) && (!Files.isDirectory(finalPathSource))) {
                     //если не равны - заменяем
                     Files.copy(finalPathSource, key, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES);
                 }
@@ -122,7 +134,7 @@ public class FileSynch {
         };
         listForDelete.sort(pathComparator);
 
-        for (int i = listForDelete.size()-1; i >= 0; i--) {
+        for (int i = listForDelete.size() - 1; i >= 0; i--) {
             Path pathDelete = listForDelete.get(i);
             Files.delete(pathDelete);
             directoriesAndFilesDest.remove(pathDelete);
