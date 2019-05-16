@@ -122,17 +122,15 @@ public class FileSynch {
         }
         //потом пустые папки, начиная с самой глубокой
         //для чего сортируем список по длинне в обратном порядке
-        Comparator<Path> pathComparator = (o1, o2) -> {
+        listForDelete.sort((o1, o2) -> {
             int result;
             if (o1.toString().length() == o2.toString().length()) {
                 result = 0;
             } else {
                 result = (o1.toString().length() > o2.toString().length()) ? 1 : -1;
             }
-
             return result;
-        };
-        listForDelete.sort(pathComparator);
+        });
 
         for (int i = listForDelete.size() - 1; i >= 0; i--) {
             Path pathDelete = listForDelete.get(i);
